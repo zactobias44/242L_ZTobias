@@ -20,7 +20,7 @@ body {
   color: var(--ink);
   background: var(--page);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  font-size: 16px;
+  font-size: 17px;
   line-height: 1.55;
 }
 
@@ -42,7 +42,7 @@ body {
 .hero h1 {
   margin: 4px 0 8px;
   font-family: Georgia, "Times New Roman", serif;
-  font-size: clamp(2.2rem, 5vw, 4rem);
+  font-size: clamp(36px, 5vw, 48px);
   font-weight: 600;
   line-height: 1.05;
   letter-spacing: -0.03em;
@@ -52,13 +52,14 @@ body {
   max-width: 720px;
   margin: 0;
   color: var(--muted);
-  font-size: 1.08rem;
+  font-size: 18px;
+  line-height: 1.6;
 }
 
 .eyebrow,
 .step-kicker {
   color: var(--teal-dark);
-  font-size: 0.78rem;
+  font-size: 14px;
   font-weight: 750;
   letter-spacing: 0.11em;
   text-transform: uppercase;
@@ -76,7 +77,8 @@ body {
   align-items: center;
   gap: 8px;
   min-width: 0;
-  padding: 9px 10px;
+  min-height: 58px;
+  padding: 10px 12px;
   color: var(--muted);
   border-bottom: 3px solid var(--line);
 }
@@ -95,14 +97,14 @@ body {
 
 .step-number {
   display: inline-grid;
-  flex: 0 0 24px;
-  width: 24px;
-  height: 24px;
+  flex: 0 0 28px;
+  width: 28px;
+  height: 28px;
   place-items: center;
   color: white;
   background: #8b929a;
   border-radius: 50%;
-  font-size: 0.76rem;
+  font-size: 13px;
   font-weight: 750;
 }
 
@@ -112,11 +114,9 @@ body {
 }
 
 .step-name {
-  overflow: hidden;
-  font-size: 0.84rem;
-  font-weight: 650;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.2;
 }
 
 .panel {
@@ -131,7 +131,7 @@ body {
 .panel h2 {
   margin: 0 0 10px;
   font-family: Georgia, "Times New Roman", serif;
-  font-size: 1.75rem;
+  font-size: 28px;
   line-height: 1.2;
 }
 
@@ -153,7 +153,7 @@ body {
 
 .input-note,
 .units {
-  font-size: 0.88rem;
+  font-size: 14px;
 }
 
 label {
@@ -201,6 +201,7 @@ textarea.form-control {
 
 details.thinking-prompt summary {
   cursor: pointer;
+  font-size: 17px;
   font-weight: 700;
 }
 
@@ -221,31 +222,163 @@ details.thinking-prompt summary {
 .calculation-card h3 {
   margin: 0 0 7px;
   color: var(--teal-dark);
-  font-size: 1.05rem;
+  font-size: 16px;
 }
 
-.formula {
-  margin: 0 0 8px;
-  font-weight: 700;
-}
-
-.arithmetic {
-  margin: 0;
-  overflow-x: auto;
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  white-space: nowrap;
-}
-
-.equation {
+.math-equation {
+  display: flex;
   width: fit-content;
+  max-width: 100%;
+  align-items: center;
+  justify-content: center;
+  gap: 0.38em;
   margin: 22px auto;
-  padding: 12px 24px;
+  padding: 14px 26px;
+  overflow-x: auto;
   background: var(--ink);
   color: white;
   border-radius: 8px;
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: 1.45rem;
+  font-family: "Cambria Math", "STIX Two Math", Georgia, serif;
+  font-size: 27px;
   text-align: center;
+  white-space: nowrap;
+}
+
+.calculation-card .math-equation {
+  margin: 6px 0 16px;
+  padding: 10px 14px;
+  background: white;
+  color: var(--ink);
+  border: 1px solid var(--line);
+  font-size: 20px;
+}
+
+.math-var {
+  font-style: italic;
+}
+
+.math-overbar {
+  font-style: italic;
+  text-decoration: overline;
+}
+
+.math-operator {
+  padding: 0 0.12em;
+}
+
+.math-symbol {
+  font-size: 1.12em;
+}
+
+.math-equation sub,
+.math-equation sup {
+  font-size: 0.65em;
+}
+
+.math-fraction {
+  display: inline-flex;
+  align-items: stretch;
+  flex-direction: column;
+  line-height: 1.05;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.math-numerator {
+  padding: 0 0.32em 0.15em;
+  border-bottom: 1.5px solid currentColor;
+}
+
+.math-denominator {
+  padding: 0.15em 0.32em 0;
+}
+
+.math-root {
+  display: inline-flex;
+  align-items: flex-start;
+}
+
+.math-radical {
+  margin-right: -0.04em;
+  font-size: 1.5em;
+  line-height: 0.95;
+}
+
+.math-radicand {
+  margin-top: 0.06em;
+  padding: 0.08em 0.22em 0;
+  border-top: 1.5px solid currentColor;
+}
+
+.worked-equation {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  margin: 0;
+  padding-bottom: 4px;
+  overflow-x: auto;
+  font-family: "Cambria Math", "STIX Two Math", Georgia, serif;
+  font-size: 17px;
+  white-space: nowrap;
+}
+
+.calculation-caption {
+  margin: 12px 0 0;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.central-tendency-review {
+  margin: 20px 0 24px;
+  padding: 18px;
+  background: #f7f8f8;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
+
+.central-tendency-review > h3 {
+  margin: 0 0 5px;
+  color: var(--teal-dark);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 22px;
+}
+
+.central-tendency-review > p {
+  margin: 0 0 14px;
+}
+
+.central-tendency-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.tendency-card {
+  padding: 13px;
+  background: white;
+  border-top: 3px solid var(--teal);
+  border-radius: 7px;
+  box-shadow: 0 3px 10px rgba(23, 32, 51, 0.06);
+}
+
+.tendency-card strong {
+  color: var(--teal-dark);
+  font-size: 16px;
+}
+
+.tendency-card p {
+  margin: 5px 0 0;
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.central-tendency-review .class-convention {
+  margin: 15px 0 0;
+  padding: 11px 13px;
+  background: var(--orange-pale);
+  border-left: 4px solid var(--orange);
+  border-radius: 6px;
 }
 
 .comparison-box {
@@ -271,7 +404,7 @@ details.thinking-prompt summary {
 
 .comparison-arrow {
   color: var(--orange);
-  font-size: 1.8rem;
+  font-size: 28px;
   font-weight: 800;
 }
 
@@ -326,7 +459,7 @@ details.thinking-prompt summary {
 
 .footer-note {
   color: var(--muted);
-  font-size: 0.84rem;
+  font-size: 13px;
   text-align: center;
 }
 
@@ -353,10 +486,6 @@ details.thinking-prompt summary {
     padding-inline: 4px;
   }
 
-  .step-name {
-    display: none;
-  }
-
   .panel {
     padding: 18px;
   }
@@ -366,11 +495,18 @@ details.thinking-prompt summary {
   }
 
   .calculation-grid > .shiny-html-output,
-  .comparison-box {
+  .comparison-box,
+  .central-tendency-grid {
     grid-template-columns: 1fr;
   }
 
   .comparison-arrow {
     transform: rotate(90deg);
+  }
+}
+
+@media (max-width: 520px) {
+  .step-name {
+    display: none;
   }
 }

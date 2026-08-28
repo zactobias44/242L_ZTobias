@@ -15,6 +15,80 @@ show_number <- function(x, digits = 2) {
 }
 
 
+# Drop unnecessary trailing zeroes when showing the original observations.
+show_observation <- function(x, digits = 2) {
+  formatted <- format(round(x, digits), nsmall = digits, trim = TRUE)
+  sub("\\.?0+$", "", formatted)
+}
+
+
+# Small HTML helpers give us clear, LaTeX-like equations without another package.
+math_fraction <- function(numerator, denominator) {
+  span(
+    class = "math-fraction",
+    span(class = "math-numerator", numerator),
+    span(class = "math-denominator", denominator)
+  )
+}
+
+
+math_root <- function(value) {
+  span(
+    class = "math-root",
+    span(class = "math-radical", "√"),
+    span(class = "math-radicand", value)
+  )
+}
+
+
+x_bar <- function() span(class = "math-overbar", "x")
+x_i <- function() tagList(span(class = "math-var", "x"), tags$sub("i"))
+
+
+mean_equation <- function() {
+  div(
+    class = "math-equation",
+    x_bar(),
+    span(class = "math-operator", "="),
+    math_fraction(
+      tagList(span(class = "math-symbol", "Σ"), x_i()),
+      span(class = "math-var", "n")
+    )
+  )
+}
+
+
+sd_equation <- function() {
+  div(
+    class = "math-equation",
+    "SD",
+    span(class = "math-operator", "="),
+    math_root(
+      math_fraction(
+        tagList(
+          span(class = "math-symbol", "Σ"),
+          "(", x_i(), " − ", x_bar(), ")", tags$sup("2")
+        ),
+        "n − 1"
+      )
+    )
+  )
+}
+
+
+se_equation <- function() {
+  div(
+    class = "math-equation",
+    "SE",
+    span(class = "math-operator", "="),
+    math_fraction(
+      "SD",
+      math_root(span(class = "math-var", "n"))
+    )
+  )
+}
+
+
 ui <- fluidPage(
   tags$head(
     tags$title("From Data to Standard Error"),
@@ -188,12 +262,20 @@ server <- function(input, output, session) {
       div(
         class = "calculation-card",
         h3(d$names[i]),
-        p(class = "formula", "mean = sum of observations / n"),
+        mean_equation(),
+        div(
+          class = "worked-equation",
+          math_fraction(
+            paste(show_observation(x), collapse = " + "),
+            length(x)
+          ),
+          span(class = "math-operator", "="),
+          strong(show_number(mean(x)))
+        ),
         p(
-          class = "arithmetic",
+          class = "calculation-caption",
           paste0(
-            "(", paste(show_number(x), collapse = " + "), ") / ",
-            length(x), " = ", show_number(mean(x))
+            "Sum = ", show_number(sum(x)), "; n = ", length(x)
           )
         )
       )
@@ -233,13 +315,14 @@ server <- function(input, output, session) {
       div(
         class = "calculation-card",
         h3(d$names[i]),
-        p(class = "formula", "SD = √[sum of squared deviations / (n − 1)]"),
-        p(
-          class = "arithmetic",
-          paste0(
-            "√(", show_number(squared_sum), " / ", s$n[i] - 1, ") = ",
-            show_number(s$SD[i])
-          )
+        sd_equation(),
+        div(
+          class = "worked-equation",
+          math_root(
+            math_fraction(show_number(squared_sum), s$n[i] - 1)
+          ),
+          span(class = "math-operator", "="),
+          strong(show_number(s$SD[i]))
         )
       )
     }))
@@ -253,14 +336,18 @@ server <- function(input, output, session) {
       div(
         class = "calculation-card",
         h3(s$Group[i]),
-        p(class = "formula", "SE = SD / √n"),
-        p(
-          class = "arithmetic",
-          paste0(
-            show_number(s$SD[i]), " / √", s$n[i], " = ", show_number(s$SE[i])
-          )
+        se_equation(),
+        div(
+          class = "worked-equation",
+          math_fraction(
+            show_number(s$SD[i]),
+            math_root(s$n[i])
+          ),
+          span(class = "math-operator", "="),
+          strong(show_number(s$SE[i]))
         ),
         p(
+          class = "calculation-caption",
           "For the graph: 2 × SE = ",
           strong(show_number(2 * s$SE[i]))
         )
@@ -362,6 +449,37 @@ server <- function(input, output, session) {
       "2" = tagList(
         div(class = "step-kicker", "Step 2 of 5"),
         h2("Find the mean"),
+        div(
+          class = "central-tendency-review",
+          h3("Remember when we talked about central tendency?"),
+          p(
+            "Mean, median, and mode all describe the center of data, but each is useful",
+            "in different situations."
+          ),
+          div(
+            class = "central-tendency-grid",
+            div(
+              class = "tendency-card",
+              strong("Mean"),
+              p("The arithmetic average. It uses every value, so unusually high or low values can pull it toward them.")
+            ),
+            div(
+              class = "tendency-card",
+              strong("Median"),
+              p("The middle value after sorting. It is often more representative when data are skewed or contain outliers.")
+            ),
+            div(
+              class = "tendency-card",
+              strong("Mode"),
+              p("The most frequent value or category. It is especially useful for categorical or repeated discrete data.")
+            )
+          ),
+          p(
+            class = "class-convention",
+            strong("Our class convention: "),
+            "the height of every bar plot in BIOL 242L represents the arithmetic mean."
+          )
+        ),
         p(
           "The mean is the balance point of a group: add all observations, then divide by",
           "the number of observations."
@@ -404,7 +522,7 @@ server <- function(input, output, session) {
           "A sample mean is an estimate. If we repeatedly collected new samples, their means",
           "would differ. Standard error describes the expected spread of those sample means."
         ),
-        div(class = "equation", "SE = SD / √n"),
+        se_equation(),
         div(class = "calculation-grid", uiOutput("se_work")),
         div(
           class = "comparison-box",
