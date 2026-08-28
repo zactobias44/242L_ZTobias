@@ -22,54 +22,99 @@ show_observation <- function(x, digits = 2) {
 }
 
 
-# Small HTML helpers give us clear, LaTeX-like equations without another package.
-math_fraction <- function(numerator, denominator) {
-  span(
-    class = "math-fraction",
-    span(class = "math-numerator", numerator),
-    span(class = "math-denominator", denominator)
+# Native MathML gives us typeset equations without loading another library.
+m_tag <- function(name, ...) tag(name, list(...))
+m_row <- function(...) m_tag("mrow", ...)
+m_number <- function(value) m_tag("mn", as.character(value))
+m_result <- function(value) m_tag("mn", mathvariant = "bold", as.character(value))
+m_variable <- function(value) m_tag("mi", value)
+m_operator <- function(value) m_tag("mo", value)
+m_text <- function(value) m_tag("mtext", value)
+m_fraction <- function(numerator, denominator) {
+  m_tag("mfrac", numerator, denominator)
+}
+m_root <- function(value) m_tag("msqrt", value)
+
+
+m_expression <- function(...) {
+  m_tag(
+    "math",
+    xmlns = "http://www.w3.org/1998/Math/MathML",
+    display = "block",
+    m_row(...)
   )
 }
 
 
-math_root <- function(value) {
-  span(
-    class = "math-root",
-    span(class = "math-radical", "√"),
-    span(class = "math-radicand", value)
+math_equation <- function(...) {
+  div(class = "math-equation", m_expression(...))
+}
+
+
+worked_equation <- function(...) {
+  div(class = "worked-equation", m_expression(...))
+}
+
+
+x_bar <- function() {
+  m_tag("mover", accent = "true", m_variable("x"), m_operator("¯"))
+}
+
+
+x_i <- function() m_tag("msub", m_variable("x"), m_variable("i"))
+
+
+sum_symbol <- function() {
+  m_tag(
+    "munderover",
+    m_operator("∑"),
+    m_row(m_variable("i"), m_operator("="), m_number(1)),
+    m_variable("n")
   )
 }
 
 
-x_bar <- function() span(class = "math-overbar", "x")
-x_i <- function() tagList(span(class = "math-var", "x"), tags$sub("i"))
+sum_observations <- function(values) {
+  pieces <- list()
+
+  for (i in seq_along(values)) {
+    pieces <- append(pieces, list(m_number(show_observation(values[i]))))
+    if (i < length(values)) {
+      pieces <- append(pieces, list(m_operator("+")))
+    }
+  }
+
+  do.call(m_row, pieces)
+}
 
 
 mean_equation <- function() {
-  div(
-    class = "math-equation",
+  math_equation(
     x_bar(),
-    span(class = "math-operator", "="),
-    math_fraction(
-      tagList(span(class = "math-symbol", "Σ"), x_i()),
-      span(class = "math-var", "n")
+    m_operator("="),
+    m_fraction(
+      m_row(sum_symbol(), x_i()),
+      m_variable("n")
     )
   )
 }
 
 
 sd_equation <- function() {
-  div(
-    class = "math-equation",
-    "SD",
-    span(class = "math-operator", "="),
-    math_root(
-      math_fraction(
-        tagList(
-          span(class = "math-symbol", "Σ"),
-          "(", x_i(), " − ", x_bar(), ")", tags$sup("2")
+  math_equation(
+    m_text("SD"),
+    m_operator("="),
+    m_root(
+      m_fraction(
+        m_row(
+          sum_symbol(),
+          m_tag(
+            "msup",
+            m_row(m_operator("("), x_i(), m_operator("−"), x_bar(), m_operator(")")),
+            m_number(2)
+          )
         ),
-        "n − 1"
+        m_row(m_variable("n"), m_operator("−"), m_number(1))
       )
     )
   )
@@ -77,13 +122,12 @@ sd_equation <- function() {
 
 
 se_equation <- function() {
-  div(
-    class = "math-equation",
-    "SE",
-    span(class = "math-operator", "="),
-    math_fraction(
-      "SD",
-      math_root(span(class = "math-var", "n"))
+  math_equation(
+    m_text("SE"),
+    m_operator("="),
+    m_fraction(
+      m_text("SD"),
+      m_root(m_variable("n"))
     )
   )
 }
@@ -263,14 +307,13 @@ server <- function(input, output, session) {
         class = "calculation-card",
         h3(d$names[i]),
         mean_equation(),
-        div(
-          class = "worked-equation",
-          math_fraction(
-            paste(show_observation(x), collapse = " + "),
-            length(x)
+        worked_equation(
+          m_fraction(
+            sum_observations(x),
+            m_number(length(x))
           ),
-          span(class = "math-operator", "="),
-          strong(show_number(mean(x)))
+          m_operator("="),
+          m_result(show_number(mean(x)))
         ),
         p(
           class = "calculation-caption",
@@ -316,13 +359,15 @@ server <- function(input, output, session) {
         class = "calculation-card",
         h3(d$names[i]),
         sd_equation(),
-        div(
-          class = "worked-equation",
-          math_root(
-            math_fraction(show_number(squared_sum), s$n[i] - 1)
+        worked_equation(
+          m_root(
+            m_fraction(
+              m_number(show_number(squared_sum)),
+              m_number(s$n[i] - 1)
+            )
           ),
-          span(class = "math-operator", "="),
-          strong(show_number(s$SD[i]))
+          m_operator("="),
+          m_result(show_number(s$SD[i]))
         )
       )
     }))
@@ -337,14 +382,13 @@ server <- function(input, output, session) {
         class = "calculation-card",
         h3(s$Group[i]),
         se_equation(),
-        div(
-          class = "worked-equation",
-          math_fraction(
-            show_number(s$SD[i]),
-            math_root(s$n[i])
+        worked_equation(
+          m_fraction(
+            m_number(show_number(s$SD[i])),
+            m_root(m_number(s$n[i]))
           ),
-          span(class = "math-operator", "="),
-          strong(show_number(s$SE[i]))
+          m_operator("="),
+          m_result(show_number(s$SE[i]))
         ),
         p(
           class = "calculation-caption",

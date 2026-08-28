@@ -226,22 +226,14 @@ details.thinking-prompt summary {
 }
 
 .math-equation {
-  display: flex;
   width: fit-content;
   max-width: 100%;
-  align-items: center;
-  justify-content: center;
-  gap: 0.38em;
   margin: 22px auto;
   padding: 14px 26px;
   overflow-x: auto;
   background: var(--ink);
   color: white;
   border-radius: 8px;
-  font-family: "Cambria Math", "STIX Two Math", Georgia, serif;
-  font-size: 27px;
-  text-align: center;
-  white-space: nowrap;
 }
 
 .calculation-card .math-equation {
@@ -250,76 +242,31 @@ details.thinking-prompt summary {
   background: white;
   color: var(--ink);
   border: 1px solid var(--line);
-  font-size: 20px;
 }
 
-.math-var {
-  font-style: italic;
-}
-
-.math-overbar {
-  font-style: italic;
-  text-decoration: overline;
-}
-
-.math-operator {
-  padding: 0 0.12em;
-}
-
-.math-symbol {
-  font-size: 1.12em;
-}
-
-.math-equation sub,
-.math-equation sup {
-  font-size: 0.65em;
-}
-
-.math-fraction {
-  display: inline-flex;
-  align-items: stretch;
-  flex-direction: column;
-  line-height: 1.05;
-  text-align: center;
-  vertical-align: middle;
-}
-
-.math-numerator {
-  padding: 0 0.32em 0.15em;
-  border-bottom: 1.5px solid currentColor;
-}
-
-.math-denominator {
-  padding: 0.15em 0.32em 0;
-}
-
-.math-root {
-  display: inline-flex;
-  align-items: flex-start;
-}
-
-.math-radical {
-  margin-right: -0.04em;
-  font-size: 1.5em;
-  line-height: 0.95;
-}
-
-.math-radicand {
-  margin-top: 0.06em;
-  padding: 0.08em 0.22em 0;
-  border-top: 1.5px solid currentColor;
+.math-equation math,
+.worked-equation math {
+  display: block;
+  margin: 0;
+  color: inherit;
+  font-family: "STIX Two Math", "Cambria Math", "Latin Modern Math", serif;
+  font-size: 27px;
 }
 
 .worked-equation {
-  display: flex;
-  align-items: center;
-  gap: 0.5em;
+  max-width: 100%;
   margin: 0;
-  padding-bottom: 4px;
+  padding: 4px 0;
   overflow-x: auto;
-  font-family: "Cambria Math", "STIX Two Math", Georgia, serif;
-  font-size: 17px;
-  white-space: nowrap;
+  color: var(--ink);
+}
+
+.calculation-card .math-equation math {
+  font-size: 22px;
+}
+
+.worked-equation math {
+  font-size: 19px;
 }
 
 .calculation-caption {
